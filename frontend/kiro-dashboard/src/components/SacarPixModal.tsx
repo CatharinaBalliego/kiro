@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { X, ChevronLeft, ChevronRight, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from './Button';
 import { useWallet } from '@/context/WalletContext';
+import { useQuote } from '@/context/QuoteContext';
 import { formatBRL, submitXdr } from '@/lib/stellar';
 import {
   startOnboarding,
@@ -35,6 +36,7 @@ interface SacarPixModalProps {
 
 export function SacarPixModal({ open, onClose }: SacarPixModalProps) {
   const { isConnected, publicKey, balance, connect, signTransaction, refreshBalance } = useWallet();
+  const { brlPerTesouro, brlToTesouro, formatTesouroAsBRL, refresh: refreshRate } = useQuote();
 
   const [step, setStep] = useState<Step>('loading');
   const [kycUrl, setKycUrl] = useState('');
@@ -214,12 +216,15 @@ export function SacarPixModal({ open, onClose }: SacarPixModalProps) {
   }, [step, refreshBalance]);
 
   async function handleGetQuote() {
-    const num = parseFloat(amount.replace(',', '.'));
-    if (!publicKey || isNaN(num) || num <= 0) return;
+    const cents = parseInt(amount.replace(/\D/g, ''), 10);
+    if (!publicKey || isNaN(cents) || cents <= 0) return;
+    const brl = cents / 100;
+    const tesouro = brlToTesouro(brl);
+    if (tesouro == null || tesouro <= 0) return;
 
     setStep('loading');
     try {
-      const q = await getQuote(customerIdRef.current, String(num));
+      const q = await getQuote(customerIdRef.current, tesouro.toFixed(7));
       setQuote(q);
       setStep('confirm');
     } catch (err) {
@@ -276,25 +281,35 @@ export function SacarPixModal({ open, onClose }: SacarPixModalProps) {
 
   if (!open) return null;
 
-  const maxAmount = balance ? parseFloat(balance) : 0;
-  const amountNum = parseFloat(amount.replace(',', '.'));
-  const amountValid = !isNaN(amountNum) && amountNum > 0 && amountNum <= maxAmount;
+  const maxTesouro = balance ? parseFloat(balance) : 0;
+  const maxBRL = brlPerTesouro != null ? maxTesouro * brlPerTesouro : null;
+
+  const amountCents = parseInt(amount.replace(/\D/g, ''), 10);
+  const amountBRL = isNaN(amountCents) ? 0 : amountCents / 100;
+  const tesouroEquivalent = brlToTesouro(amountBRL);
+  const amountValid =
+    amountBRL > 0 &&
+    tesouroEquivalent != null &&
+    tesouroEquivalent > 0 &&
+    tesouroEquivalent <= maxTesouro;
+  const amountDisplay = amount
+    ? amountBRL.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : '';
 
   return (
     <div
       onClick={handleClose}
-      className="fixed inset-0 z-[100] flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', padding: 24 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 md:p-6"
+      style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-[480px] max-w-full rounded-[var(--radius-xl)] border border-[var(--stroke-2)]"
+        className="w-[480px] max-w-full rounded-[var(--radius-xl)] border border-[var(--stroke-2)] p-5 md:p-7"
         style={{
           background: 'rgba(20, 22, 32, 0.97)',
           backdropFilter: 'blur(24px) saturate(140%)',
-          padding: 28,
           boxShadow: 'var(--shadow-3)',
-          maxHeight: '90vh',
+          maxHeight: '92vh',
           overflowY: 'auto',
         }}
       >
@@ -390,29 +405,42 @@ export function SacarPixModal({ open, onClose }: SacarPixModalProps) {
                 className="text-[11px] text-[var(--fg-3)] font-medium uppercase"
                 style={{ letterSpacing: '0.04em' }}
               >
-                Valor a sacar (TESOURO)
+                Quanto deseja sacar?
               </label>
               <div
                 className="flex items-center gap-[10px] border rounded-[var(--radius-md)]"
                 style={{ padding: '14px 16px', borderColor: 'var(--stroke-3)', background: 'var(--bg-3)' }}
               >
+                <span className="k-money text-[18px] text-[var(--fg-3)]">R$</span>
                 <input
-                  type="number"
-                  min="0"
-                  max={maxAmount}
-                  step="0.01"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="0.00"
-                  className="bg-transparent border-none outline-none flex-1 k-money font-medium"
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={amountDisplay}
+                  onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
+                  placeholder="0,00"
+                  className="bg-transparent border-none outline-none flex-1 min-w-0 k-money font-medium"
                   style={{ fontSize: 28, color: 'var(--kiro-green)' }}
                   autoFocus
                 />
-                <span className="text-[13px] font-medium text-[var(--fg-3)]">TESOURO</span>
               </div>
               <p className="text-[12px] text-[var(--fg-3)]">
-                Saldo disponível: {balance ? formatBRL(balance) : '—'}
+                Saldo disponível: {balance ? formatTesouroAsBRL(balance) : '—'}
               </p>
+              {brlPerTesouro == null && (
+                <button
+                  type="button"
+                  onClick={() => { refreshRate(); }}
+                  className="text-[12px] text-[var(--kiro-green)] bg-transparent border-none cursor-pointer self-start"
+                >
+                  Cotação indisponível — tentar novamente
+                </button>
+              )}
+              {amountBRL > 0 && maxBRL != null && amountBRL > maxBRL && (
+                <p className="text-[12px]" style={{ color: '#FF4D6D' }}>
+                  Valor maior que o saldo disponível.
+                </p>
+              )}
             </div>
 
             <Button
@@ -436,15 +464,19 @@ export function SacarPixModal({ open, onClose }: SacarPixModalProps) {
               style={{ padding: '18px 20px', background: 'var(--bg-3)' }}
             >
               <div className="flex justify-between items-center">
-                <span className="text-[13px] text-[var(--fg-3)]">Você envia</span>
-                <span className="text-[15px] font-medium text-[var(--fg-1)]">
-                  {quote.sourceAmount} TESOURO
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
                 <span className="text-[13px] text-[var(--fg-3)]">Você recebe via PIX</span>
                 <span className="text-[18px] font-semibold" style={{ color: 'var(--kiro-green)' }}>
                   {formatBRL(quote.destinationAmount)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[13px] text-[var(--fg-3)]">Equivalente em TESOURO</span>
+                <span className="text-[13px] text-[var(--fg-2)]">
+                  {parseFloat(quote.sourceAmount).toLocaleString('pt-BR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 4,
+                  })}{' '}
+                  TESOURO
                 </span>
               </div>
               <div className="h-px" style={{ background: 'var(--stroke-3)' }} />

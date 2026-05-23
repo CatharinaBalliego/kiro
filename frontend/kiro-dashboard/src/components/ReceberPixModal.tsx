@@ -218,12 +218,13 @@ export function ReceberPixModal({ open, onClose }: ReceberPixModalProps) {
   useEffect(() => () => stopPolls(), [stopPolls]);
 
   async function handleGetQuote() {
-    const num = parseFloat(amount.replace(',', '.'));
-    if (!publicKey || isNaN(num) || num <= 0) return;
+    const cents = parseInt(amount.replace(/\D/g, ''), 10);
+    if (!publicKey || isNaN(cents) || cents <= 0) return;
+    const num = cents / 100;
 
     setStep('loading');
     try {
-      const q = await getOnRampQuote(customerIdRef.current, String(num));
+      const q = await getOnRampQuote(customerIdRef.current, num.toFixed(2));
       setQuote(q);
       setStep('confirm');
     } catch (err) {
@@ -263,24 +264,30 @@ export function ReceberPixModal({ open, onClose }: ReceberPixModalProps) {
 
   if (!open) return null;
 
-  const amountNum = parseFloat(amount.replace(',', '.'));
-  const amountValid = !isNaN(amountNum) && amountNum > 0;
+  // `amount` is stored as a digit-only string of cents (e.g. "10000" → R$ 100,00)
+  // so the input always shows a valid BRL formatting and the user never has
+  // to type the decimal separator.
+  const amountCents = parseInt(amount.replace(/\D/g, ''), 10);
+  const amountNum = isNaN(amountCents) ? 0 : amountCents / 100;
+  const amountValid = amountNum > 0;
+  const amountDisplay = amount
+    ? amountNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+    : '';
 
   return (
     <div
       onClick={handleClose}
-      className="fixed inset-0 z-[100] flex items-center justify-center"
-      style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', padding: 24 }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-3 md:p-6"
+      style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)' }}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-[480px] max-w-full rounded-[var(--radius-xl)] border border-[var(--stroke-2)]"
+        className="w-[480px] max-w-full rounded-[var(--radius-xl)] border border-[var(--stroke-2)] p-5 md:p-7"
         style={{
           background: 'rgba(20, 22, 32, 0.97)',
           backdropFilter: 'blur(24px) saturate(140%)',
-          padding: 28,
           boxShadow: 'var(--shadow-3)',
-          maxHeight: '90vh',
+          maxHeight: '92vh',
           overflowY: 'auto',
         }}
       >
@@ -377,11 +384,11 @@ export function ReceberPixModal({ open, onClose }: ReceberPixModalProps) {
               >
                 <span className="k-money text-[18px] text-[var(--fg-3)]">R$</span>
                 <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={amountDisplay}
+                  onChange={(e) => setAmount(e.target.value.replace(/\D/g, ''))}
                   placeholder="0,00"
                   className="bg-transparent border-none outline-none flex-1 k-money font-medium"
                   style={{ fontSize: 28, color: 'var(--kiro-green)' }}
@@ -486,25 +493,29 @@ export function ReceberPixModal({ open, onClose }: ReceberPixModalProps) {
             </div>
 
             <div
-              className="flex items-center gap-2 border rounded-[var(--radius-md)]"
+              className="border rounded-[var(--radius-md)]"
               style={{ padding: '10px 14px', borderColor: 'var(--stroke-3)', background: 'var(--bg-3)' }}
             >
-              <span className="flex-1 text-[11px] text-[var(--fg-2)] font-mono truncate">
+              <span className="block text-[11px] text-[var(--fg-2)] font-mono truncate">
                 {order.depositPixCode}
               </span>
+            </div>
+
+            <div className="flex justify-center">
               <button
                 type="button"
                 onClick={handleCopyPix}
-                className="bg-transparent border-none text-[var(--kiro-green)] cursor-pointer flex items-center gap-1 text-[12px] font-medium"
+                className="inline-flex items-center justify-center gap-[6px] rounded-full border border-[var(--stroke-3)] bg-transparent text-[var(--kiro-green)] cursor-pointer text-[12px] font-medium hover:bg-white/[0.04] transition-colors"
+                style={{ padding: '8px 18px' }}
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}
-                {copied ? 'Copiado' : 'Copiar'}
+                {copied ? 'Copiado' : 'Copiar código PIX'}
               </button>
             </div>
 
             <div className="flex items-center gap-2 text-[12px] text-[var(--fg-3)] justify-center">
               <Loader2 size={13} strokeWidth={1.5} className="animate-spin" />
-              Aguardando pagamento via PIX...
+              Aguardando pagamento via PIX
             </div>
           </div>
         )}

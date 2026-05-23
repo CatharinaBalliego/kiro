@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { House, BarChart3, Users, Menu, type LucideIcon } from 'lucide-react';
+import { House, BarChart3, Menu, type LucideIcon } from 'lucide-react';
 
 interface Tab {
   to: string;
@@ -10,17 +10,10 @@ interface Tab {
 const TABS: Tab[] = [
   { to: '/resumo', label: 'Início', Icon: House },
   { to: '/transacoes', label: 'Financeiro', Icon: BarChart3 },
-  { to: '/clientes', label: 'Clientes', Icon: Users },
   { to: '/mais', label: 'Mais', Icon: Menu },
 ];
 
-/**
- * Fixed bottom-tab bar for the mobile shell.
- *
- * Each tab is a 44×56 touch target (height includes label, so ≥44 in the
- * shorter axis). Active state lifts the icon into --kiro-green to mirror
- * the desktop sidebar's active styling.
- */
+
 export function MobileBottomNav() {
   return (
     <nav
