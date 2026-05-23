@@ -13,6 +13,7 @@ import {
   hasPasskeyWallet as readHasPasskeyWallet,
   isPasskeySupported,
   loginWithPasskey as authPasskey,
+  recoverPasskeyWallet,
   signXdrWithPasskey,
 } from '@/lib/passkey/wallet';
 
@@ -41,6 +42,12 @@ interface WalletState {
   signTransaction: (xdr: string) => Promise<string>;
   /** Re-fetches the TESOURO balance from Horizon. No-op if not connected. */
   refreshBalance: () => Promise<void>;
+  /**
+   * Restore access on a new device using a discoverable (synced) passkey.
+   * Shows the browser passkey picker with no hint — user selects their synced
+   * credential and the wallet is re-derived deterministically from the PRF output.
+   */
+  recover: () => Promise<void>;
 }
 
 const WalletContext = createContext<WalletState | null>(null);
@@ -113,6 +120,18 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setBalance(bal);
   }, [publicKey]);
 
+  const recover = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const address = await recoverPasskeyWallet();
+      setHasPasskeyWallet(true);
+      setPublicKey(address);
+      await loadBalance(address);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [loadBalance]);
+
   return (
     <WalletContext.Provider
       value={{
@@ -127,6 +146,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         forgetPasskeyAccount,
         signTransaction,
         refreshBalance,
+        recover,
       }}
     >
       {children}

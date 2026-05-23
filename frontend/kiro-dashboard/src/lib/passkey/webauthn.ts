@@ -43,6 +43,7 @@ export interface PasskeyRegistrationResult {
 }
 
 export interface PasskeyAuthResult {
+  credentialId: Uint8Array;
   prfOutput: ArrayBuffer;
 }
 
@@ -114,8 +115,13 @@ export async function createPasskey(userName: string): Promise<PasskeyRegistrati
 /**
  * Re-authenticate with an existing passkey. PRF output is deterministic for
  * the same credential + salt, so this yields the same bytes used at creation.
+ *
+ * Pass `credentialId` to target a specific credential (normal login).
+ * Omit it (or pass undefined) for a discoverable-credential flow — the browser
+ * lists all passkeys for this rpId, letting the user pick their synced passkey
+ * on a new device (account recovery).
  */
-export async function authenticatePasskey(credentialId: Uint8Array): Promise<PasskeyAuthResult> {
+export async function authenticatePasskey(credentialId?: Uint8Array): Promise<PasskeyAuthResult> {
   if (!isPasskeySupported()) {
     throw new Error('Passkeys não são suportadas neste navegador.');
   }
@@ -126,9 +132,9 @@ export async function authenticatePasskey(credentialId: Uint8Array): Promise<Pas
     publicKey: {
       challenge,
       rpId: getRpId(),
-      allowCredentials: [
-        { id: credentialId as unknown as BufferSource, type: 'public-key' },
-      ],
+      allowCredentials: credentialId
+        ? [{ id: credentialId as unknown as BufferSource, type: 'public-key' }]
+        : [],
       userVerification: 'required',
       timeout: 60_000,
       extensions: {
@@ -146,5 +152,5 @@ export async function authenticatePasskey(credentialId: Uint8Array): Promise<Pas
     throw new Error('PRF não disponível na autenticação. Atualize o navegador.');
   }
 
-  return { prfOutput };
+  return { credentialId: new Uint8Array(cred.rawId), prfOutput };
 }

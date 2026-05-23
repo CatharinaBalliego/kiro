@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import {
   ChevronDown,
   Fingerprint,
+  KeyRound,
   Loader2,
   LogOut,
   Trash2,
@@ -47,6 +48,7 @@ export function WalletButton() {
     connect,
     disconnect,
     forgetPasskeyAccount,
+    recover,
   } = useWallet();
   const profile = useUserProfile();
 
@@ -81,6 +83,17 @@ export function WalletButton() {
       const msg = err instanceof Error ? err.message : 'Erro ao autenticar.';
       setErrorMsg(msg);
       console.error('[WalletButton] passkey flow failed:', err);
+    }
+  }
+
+  async function handleRecover() {
+    setErrorMsg(null);
+    setMenuOpen(false);
+    try {
+      await recover();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro ao recuperar conta.';
+      setErrorMsg(msg);
     }
   }
 
@@ -181,6 +194,19 @@ export function WalletButton() {
             disabled={disabledPrimary}
             primary
           />
+
+          {!hasPasskeyWallet && (
+            <>
+              <div style={{ height: 1, background: 'var(--stroke-1)' }} />
+              <MenuItem
+                icon={<KeyRound size={15} strokeWidth={1.7} color="var(--fg-2)" />}
+                title="Recuperar acesso"
+                subtitle="Use sua passkey sincronizada para restaurar a conta em novo dispositivo"
+                onClick={handleRecover}
+                disabled={disabledPrimary}
+              />
+            </>
+          )}
 
           {hasPasskeyWallet && (
             <>
@@ -290,6 +316,7 @@ export function WalletButtonMobile() {
     connect,
     disconnect,
     forgetPasskeyAccount,
+    recover,
   } = useWallet();
   const profile = useUserProfile();
 
@@ -315,6 +342,18 @@ export function WalletButtonMobile() {
       setErrorMsg(msg);
       setSheetOpen(true);
       console.error('[WalletButtonMobile] passkey flow failed:', err);
+    }
+  }
+
+  async function handleRecover() {
+    setErrorMsg(null);
+    setSheetOpen(false);
+    try {
+      await recover();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro ao recuperar conta.';
+      setErrorMsg(msg);
+      setSheetOpen(true);
     }
   }
 
@@ -399,6 +438,19 @@ export function WalletButtonMobile() {
                 disabled={disabledPrimary}
                 primary
               />
+
+              {!hasPasskeyWallet && (
+                <>
+                  <div style={{ height: 1, background: 'var(--stroke-1)' }} />
+                  <MenuItem
+                    icon={<KeyRound size={15} strokeWidth={1.7} color="var(--fg-2)" />}
+                    title="Recuperar acesso"
+                    subtitle="Use sua passkey sincronizada para restaurar a conta em novo dispositivo"
+                    onClick={handleRecover}
+                    disabled={disabledPrimary}
+                  />
+                </>
+              )}
 
               {hasPasskeyWallet && (
                 <>
