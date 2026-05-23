@@ -66,7 +66,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/resumo" replace />} />
               <Route path="/resumo" element={<Resumo onReceive={openSacar} />} />
-              <Route path="/transacoes" element={<Transacoes />} />
+              <Route path="/transacoes" element={<Transacoes onReceive={openPix} />} />
               <Route path="/recebimentos" element={<Recebimentos onReceive={openPix} />} />
               <Route path="/extrato" element={<Placeholder name="Extrato" />} />
               <Route path="/links" element={<Placeholder name="Links de Pagamento" />} />

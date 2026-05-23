@@ -2,7 +2,9 @@
 
 Plataforma PayFi que transforma vendas em dinheiro imediato. O Kiro atua na intersecção entre o varejo tradicional e a inovação financeira da Web3, conectando lojistas e investidores através da blockchain Stellar.
 
-**Demo em produção:** https://kiro-merchant-dashboard.netlify.app/resumo
+**Demo em produção:**
+- Landing page: https://kiropay.netlify.app
+- Dashboard do lojista: https://kiro-merchant-dashboard.netlify.app/resumo
 
 ---
 
@@ -167,7 +169,8 @@ Paleta principal (ver `src/styles/tokens.css`):
 
 ## Deploy
 
-- **Frontend:** Netlify — https://kiro-merchant-dashboard.netlify.app/resumo .
+- **Landing page:** Netlify — https://kiropay.netlify.app
+- **Dashboard:** Netlify — https://kiro-merchant-dashboard.netlify.app/resumo
 - **Backend + DB:** Docker Compose.
 
 ---

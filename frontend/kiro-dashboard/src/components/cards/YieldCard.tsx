@@ -24,6 +24,7 @@ export function YieldCard() {
   const { valuesHidden } = useDashboard();
   return (
     <Card className="min-h-[290px]">
+      <div style={{ filter: 'blur(3.2px)' }}>
       <CardEyebrow info>Rendimento Acumulado</CardEyebrow>
 
       <div
@@ -103,6 +104,7 @@ export function YieldCard() {
           </div>
         </div>
         <ChevronRight size={16} color="var(--fg-3)" strokeWidth={1.6} />
+      </div>
       </div>
     </Card>
   );

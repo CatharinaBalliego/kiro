@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Download, Filter, Search, ShoppingBag, ArrowUpRight } from 'lucide-react';
+import { Download, Filter, Plus, Search, ShoppingBag, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { FilterChip } from '@/components/FilterChip';
@@ -9,8 +9,13 @@ import { fetchTesouroPayments, type WalletPayment } from '@/lib/stellar';
 
 type FilterKey = 'todos' | 'recebidos' | 'saques';
 
+interface TransacoesProps {
+  /** Opens the on-ramp modal. Optional because only mobile renders the trigger. */
+  onReceive?: () => void;
+}
+
 /** Full filterable list of every TESOURO movement on the connected wallet. */
-export default function Transacoes() {
+export default function Transacoes({ onReceive }: TransacoesProps) {
   const { publicKey, balance, isConnected } = useWallet();
   // `null` = haven't fetched yet (show skeleton). `[]` = fetched but empty.
   const [payments, setPayments] = useState<WalletPayment[] | null>(null);
@@ -55,12 +60,25 @@ export default function Transacoes() {
           </div>
         </div>
         <div className="flex gap-[10px]">
-          <Button variant="secondary" size="sm" icon={Filter}>
+          {/* Desktop-only utility buttons — chips below already cover filtering and CSV is not useful on a phone. */}
+          <Button variant="secondary" size="sm" icon={Filter} className="hidden md:inline-flex">
             Filtros
           </Button>
-          <Button variant="secondary" size="sm" icon={Download}>
+          <Button variant="secondary" size="sm" icon={Download} className="hidden md:inline-flex">
             Exportar CSV
           </Button>
+          {/* Mobile-only: desktop users already have the trigger on /recebimentos. */}
+          {onReceive && (
+            <Button
+              variant="primary"
+              size="sm"
+              icon={Plus}
+              onClick={onReceive}
+              className="md:hidden"
+            >
+              Novo recebimento
+            </Button>
+          )}
         </div>
       </div>
 
@@ -97,7 +115,7 @@ export default function Transacoes() {
         </div>
 
         <div
-          className="grid border-b border-[var(--stroke-1)] font-display text-[11px] text-[var(--fg-3)] uppercase"
+          className="hidden md:grid border-b border-[var(--stroke-1)] font-display text-[11px] text-[var(--fg-3)] uppercase"
           style={{
             gridTemplateColumns: '36px 1fr auto 110px 110px',
             gap: 16,
@@ -141,40 +159,79 @@ function PaymentRow({ payment }: { payment: WalletPayment }) {
   const isOut = payment.direction === 'out';
   const Icon = isOut ? ArrowUpRight : ShoppingBag;
   const label = isOut ? 'Saque via PIX' : 'Pagamento recebido';
+  const amountColor = isOut ? '#FF4D6D' : 'var(--kiro-green)';
+  const amountText = `${isOut ? '− ' : '+ '}${payment.amountBRL}`;
 
   return (
-    <div
-      className="grid items-center cursor-pointer rounded-[12px] transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:bg-white/[0.03]"
-      style={{
-        gridTemplateColumns: '36px 1fr auto 110px 110px',
-        gap: 16,
-        padding: '14px 12px',
-      }}
-    >
+    <>
+      {/* Mobile: icon | label + date stacked | amount + status stacked. */}
       <div
-        className="flex items-center justify-center rounded-[10px]"
+        className="md:hidden grid items-center cursor-pointer rounded-[12px] transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:bg-white/[0.03]"
         style={{
-          width: 36,
-          height: 36,
-          background: isOut ? 'rgba(123,44,191,0.16)' : 'rgba(0,255,135,0.10)',
-          color: isOut ? '#C99EFA' : 'var(--kiro-green)',
+          gridTemplateColumns: '36px minmax(0, 1fr) auto',
+          gap: 12,
+          padding: '12px 10px',
         }}
       >
-        <Icon size={18} strokeWidth={1.6} />
+        <div
+          className="flex items-center justify-center rounded-[10px]"
+          style={{
+            width: 36,
+            height: 36,
+            background: isOut ? 'rgba(123,44,191,0.16)' : 'rgba(0,255,135,0.10)',
+            color: isOut ? '#C99EFA' : 'var(--kiro-green)',
+          }}
+        >
+          <Icon size={18} strokeWidth={1.6} />
+        </div>
+        <div className="min-w-0">
+          <div className="text-[14px] text-[var(--fg-1)] font-medium truncate">{label}</div>
+          <div className="k-money text-[11px] text-[var(--fg-3)] mt-[2px]">{payment.when}</div>
+        </div>
+        <div className="flex flex-col items-end gap-[6px]">
+          <span
+            className="k-money text-[14px] whitespace-nowrap"
+            style={{ color: amountColor }}
+          >
+            {amountText}
+          </span>
+          <StatusTag status="success">Concluído</StatusTag>
+        </div>
       </div>
-      <div className="text-[14px] text-[var(--fg-1)] font-medium">{label}</div>
+
+      {/* Desktop: original 5-column grid. */}
       <div
-        className="k-money text-[14px] text-right"
-        style={{ color: isOut ? '#FF4D6D' : 'var(--kiro-green)' }}
+        className="hidden md:grid items-center cursor-pointer rounded-[12px] transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)] hover:bg-white/[0.03]"
+        style={{
+          gridTemplateColumns: '36px 1fr auto 110px 110px',
+          gap: 16,
+          padding: '14px 12px',
+        }}
       >
-        {isOut ? '− ' : '+ '}
-        {payment.amountBRL}
+        <div
+          className="flex items-center justify-center rounded-[10px]"
+          style={{
+            width: 36,
+            height: 36,
+            background: isOut ? 'rgba(123,44,191,0.16)' : 'rgba(0,255,135,0.10)',
+            color: isOut ? '#C99EFA' : 'var(--kiro-green)',
+          }}
+        >
+          <Icon size={18} strokeWidth={1.6} />
+        </div>
+        <div className="text-[14px] text-[var(--fg-1)] font-medium">{label}</div>
+        <div
+          className="k-money text-[14px] text-right whitespace-nowrap"
+          style={{ color: amountColor }}
+        >
+          {amountText}
+        </div>
+        <div>
+          <StatusTag status="success">Concluído</StatusTag>
+        </div>
+        <div className="k-money text-[11px] text-[var(--fg-3)] text-right">{payment.when}</div>
       </div>
-      <div>
-        <StatusTag status="success">Concluído</StatusTag>
-      </div>
-      <div className="k-money text-[11px] text-[var(--fg-3)] text-right">{payment.when}</div>
-    </div>
+    </>
   );
 }
 
@@ -197,9 +254,9 @@ function SkeletonList() {
           key={i}
           className="grid items-center rounded-[12px]"
           style={{
-            gridTemplateColumns: '36px 1fr auto 110px 110px',
-            gap: 16,
-            padding: '14px 12px',
+            gridTemplateColumns: '36px minmax(0,1fr) auto',
+            gap: 12,
+            padding: '14px 10px',
           }}
         >
           <div
@@ -211,16 +268,8 @@ function SkeletonList() {
             style={{ height: 14, width: '60%', background: 'rgba(255,255,255,0.04)' }}
           />
           <div
-            className="rounded animate-pulse"
+            className="rounded animate-pulse justify-self-end"
             style={{ height: 14, width: 90, background: 'rgba(255,255,255,0.04)' }}
-          />
-          <div
-            className="rounded animate-pulse"
-            style={{ height: 22, width: 90, background: 'rgba(255,255,255,0.04)' }}
-          />
-          <div
-            className="rounded animate-pulse"
-            style={{ height: 12, width: 80, background: 'rgba(255,255,255,0.04)' }}
           />
         </div>
       ))}

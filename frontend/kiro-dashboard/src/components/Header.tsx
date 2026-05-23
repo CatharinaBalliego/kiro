@@ -6,10 +6,12 @@ import { IconButton } from './IconButton';
 import { NotificationsPopover } from './NotificationsPopover';
 import { WalletButton } from './WalletButton';
 import { useUserProfile } from '@/context/UserProfileContext';
+import { useNotifications } from '@/context/NotificationsContext';
 
 /** Top app header: tabs left, notifs / help / user-chip right. */
 export function Header() {
   const [notifOpen, setNotifOpen] = useState(false);
+  const { unreadCount } = useNotifications();
 
   return (
     <header
@@ -22,7 +24,7 @@ export function Header() {
         <WalletButton />
         <IconButton
           icon={Bell}
-          badge
+          badge={unreadCount > 0}
           active={notifOpen}
           onClick={() => setNotifOpen((o) => !o)}
           title="Notificações"
