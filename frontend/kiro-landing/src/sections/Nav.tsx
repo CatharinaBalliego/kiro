@@ -6,7 +6,7 @@ import { Button } from '@/components/Button';
 const DASHBOARD_URL = 'https://kiro-merchant-dashboard.netlify.app/resumo';
 
 const LINKS = [
-  { href: '#audiencias', label: 'Para quem é' },
+  { href: '#audiencias', label: 'Pra que serve' },
   { href: '#como-funciona', label: 'Como funciona' },
   { href: '#numeros', label: 'Números' },
 ];

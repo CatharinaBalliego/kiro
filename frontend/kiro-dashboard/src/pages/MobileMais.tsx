@@ -28,9 +28,9 @@ function buildChartData(payments: { direction: string; brlCentavos: number; crea
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(now);
     d.setDate(now.getDate() - (6 - i));
-    const dayStr = d.toISOString().slice(0, 10);
+    const dayKey = d.toDateString();
     const label = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-    const dayPayments = payments.filter((p) => p.createdAt.slice(0, 10) === dayStr);
+    const dayPayments = payments.filter((p) => new Date(p.createdAt).toDateString() === dayKey);
     const received = dayPayments
       .filter((p) => p.direction === 'in')
       .reduce((sum, p) => sum + p.brlCentavos / 100, 0);
@@ -79,8 +79,8 @@ export default function MobileMais() {
     [payments, isConnected],
   );
 
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const todayPayments = isConnected ? payments.filter((p) => p.createdAt.slice(0, 10) === todayStr) : [];
+  const todayKey = new Date().toDateString();
+  const todayPayments = isConnected ? payments.filter((p) => new Date(p.createdAt).toDateString() === todayKey) : [];
   const todayIn = todayPayments.filter((p) => p.direction === 'in').reduce((s, p) => s + p.brlCentavos / 100, 0);
   const todayOut = todayPayments.filter((p) => p.direction === 'out').reduce((s, p) => s + p.brlCentavos / 100, 0);
 

@@ -3,6 +3,7 @@ import { Hero } from './sections/Hero';
 import { Audiences } from './sections/Audiences';
 import { HowItWorks } from './sections/HowItWorks';
 import { Stats } from './sections/Stats';
+import { ComingSoon } from './sections/ComingSoon';
 import { CTAFinal } from './sections/CTAFinal';
 import { Footer } from './sections/Footer';
 
@@ -16,6 +17,7 @@ export default function App() {
         <Audiences />
         <HowItWorks />
         <Stats />
+        <ComingSoon />
         <CTAFinal />
       </main>
       <Footer />

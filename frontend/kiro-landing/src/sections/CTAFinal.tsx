@@ -27,16 +27,15 @@ export function CTAFinal() {
         />
 
         <div className="relative max-w-[680px] mx-auto flex flex-col items-center gap-6">
-          <span className="k-eyebrow">Pronto para começar</span>
+          <span className="k-eyebrow">Pronto pra começar</span>
           <h2
             className="k-display"
             style={{ fontSize: 'clamp(32px, 5vw, 52px)' }}
           >
-            Nunca mais espere{' '}
-            <span className="k-gradient-text">30 dias</span> pelo seu dinheiro.
+            Seu dinheiro <span className="k-gradient-text">não dorme</span>.
           </h2>
           <p className="font-sans text-[16px] text-[var(--fg-2)] leading-relaxed max-w-[520px]">
-            Acesse o dashboard de demonstração e veja na prática como o Kiro transforma vendas em saldo disponível imediato.
+            Veja na prática como funciona uma conta de PIX que rende sozinha e saca a qualquer hora. Demo aberta, sem cadastro.
           </p>
           <Button
             variant="primary"
@@ -50,7 +49,7 @@ export function CTAFinal() {
             Acessar dashboard
           </Button>
           <span className="font-sans text-[12px] text-[var(--fg-3)]">
-            Sem cadastro · Ambiente Testnet · Demo aberta ao público
+            Sem cadastro · Demo aberta
           </span>
         </div>
       </div>

@@ -1,21 +1,21 @@
-import { QrCode, Zap, Wallet } from 'lucide-react';
+import { QrCode, TrendingUp, ArrowDownToLine } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 const STEPS: { Icon: LucideIcon; title: string; body: string }[] = [
   {
     Icon: QrCode,
     title: 'Cliente paga via PIX',
-    body: 'Você recebe o pagamento normalmente. O Kiro captura a transação em tempo real via webhook.',
+    body: 'Você gera a cobrança no Kiro e manda pro cliente. Ele paga e o dinheiro cai direto na sua conta.',
   },
   {
-    Icon: Zap,
-    title: 'Recebível aparece no Kiro',
-    body: 'A venda é tokenizada como recebível na rede Stellar. Você acompanha tudo no dashboard.',
+    Icon: TrendingUp,
+    title: 'Seu saldo já começa a render',
+    body: 'Cada real parado na conta rende todo dia útil, automaticamente. Você acompanha o quanto cresceu no painel.',
   },
   {
-    Icon: Wallet,
-    title: 'Antecipe quando quiser',
-    body: 'Em um clique, converte recebíveis futuros em saldo BRL disponível na hora — saque via PIX 24/7.',
+    Icon: ArrowDownToLine,
+    title: 'Saque pelo PIX quando precisar',
+    body: 'Em um clique, manda pra sua conta do banco. A qualquer hora, todo dia da semana.',
   },
 ];
 

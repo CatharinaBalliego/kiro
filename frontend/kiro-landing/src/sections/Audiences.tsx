@@ -1,43 +1,37 @@
-import { Store, TrendingUp, Check } from 'lucide-react';
+import { Smartphone, TrendingUp, Clock } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 export function Audiences() {
   return (
-    <section id="audiencias" className="relative z-10 max-w-[1180px] mx-auto px-5 md:px-8 py-16 md:py-24">
+    <section
+      id="audiencias"
+      className="relative z-10 max-w-[1180px] mx-auto px-5 md:px-8 py-16 md:py-24"
+    >
       <SectionHeader
-        eyebrow="Para quem é"
+        eyebrow="Pra que serve"
         title={
           <>
-            Dois lados do <span className="k-gradient-text">mesmo ciclo</span>.
+            Tudo que sua conta <span className="k-gradient-text">precisa fazer</span>.
           </>
         }
-        subtitle="O Kiro conecta lojistas que precisam de capital de giro com investidores que buscam rendimento atrelado ao Tesouro Direto tokenizado."
+        subtitle="O Kiro é a conta do seu negócio. Recebe seus clientes por PIX, faz o dinheiro parado render todo dia, e saca pelo PIX a qualquer hora."
       />
 
-      <div className="grid md:grid-cols-2 gap-5 md:gap-6 mt-12">
-        <AudienceCard
-          variant="green"
-          Icon={Store}
-          tag="Para lojistas"
-          title="Receba antes do vencimento."
-          bullets={[
-            'Antecipe recebíveis de cartão em 1 clique',
-            'Saque via PIX 24/7, inclusive fim de semana',
-            'Taxa flat e transparente — sem letrinha miúda',
-            'Saldo parado rende automaticamente',
-          ]}
+      <div className="grid md:grid-cols-3 gap-5 md:gap-6 mt-12">
+        <BenefitCard
+          Icon={Smartphone}
+          title="PIX direto na conta"
+          body="Seu cliente paga, você recebe na hora. Taxa flat de 0,20% por PIX, sem maquininha pra alugar, sem mensalidade."
         />
-        <AudienceCard
-          variant="purple"
+        <BenefitCard
           Icon={TrendingUp}
-          tag="Para investidores"
-          title="Capital que rende com lastro real."
-          bullets={[
-            'Rendimento atrelado a títulos do Tesouro Direto',
-            'Tokenização via Stellar — liquidez on-chain',
-            'Diversificação automática entre recebíveis',
-            'Transparência total na blockchain',
-          ]}
+          title="Dinheiro parado, dinheiro rendendo"
+          body="Tudo que entrar começa a render todo dia útil, no mesmo ritmo do Tesouro Direto. Sem você precisar mexer."
+        />
+        <BenefitCard
+          Icon={Clock}
+          title="Saque a qualquer hora"
+          body="Precisou pagar fornecedor no domingo de noite? Saca pelo PIX. Funciona 24 horas, todo dia."
         />
       </div>
     </section>
@@ -71,23 +65,16 @@ function SectionHeader({
   );
 }
 
-interface AudienceCardProps {
-  variant: 'green' | 'purple';
+interface BenefitCardProps {
   Icon: LucideIcon;
-  tag: string;
   title: string;
-  bullets: string[];
+  body: string;
 }
 
-function AudienceCard({ variant, Icon, tag, title, bullets }: AudienceCardProps) {
-  const accent =
-    variant === 'green'
-      ? { bg: 'rgba(0,255,135,0.10)', fg: 'var(--kiro-green)', border: 'var(--stroke-green)' }
-      : { bg: 'rgba(123,44,191,0.18)', fg: '#C99EFA', border: 'var(--stroke-purple)' };
-
+function BenefitCard({ Icon, title, body }: BenefitCardProps) {
   return (
     <div
-      className="relative overflow-hidden rounded-[var(--radius-xl)] border p-7 md:p-8 flex flex-col gap-5"
+      className="relative overflow-hidden rounded-[var(--radius-xl)] border p-7 md:p-8 flex flex-col gap-4"
       style={{
         background: 'rgba(255,255,255,0.035)',
         borderColor: 'var(--stroke-2)',
@@ -95,49 +82,37 @@ function AudienceCard({ variant, Icon, tag, title, bullets }: AudienceCardProps)
         WebkitBackdropFilter: 'blur(20px) saturate(140%)',
       }}
     >
-      {/* Decorative corner glow */}
       <div
         aria-hidden="true"
         className="absolute -top-20 -right-20 w-60 h-60 rounded-full pointer-events-none"
         style={{
-          background:
-            variant === 'green' ? 'var(--gradient-glow-green)' : 'var(--gradient-glow-purple)',
-          opacity: 0.45,
+          background: 'var(--gradient-glow-green)',
+          opacity: 0.35,
         }}
       />
 
-      <div className="flex items-center gap-3 relative">
-        <span
-          className="inline-flex items-center justify-center rounded-[14px]"
-          style={{ width: 44, height: 44, background: accent.bg, border: `1px solid ${accent.border}` }}
-        >
-          <Icon size={22} strokeWidth={1.6} color={accent.fg} />
-        </span>
-        <span
-          className="font-display text-[12px] font-medium uppercase"
-          style={{ color: accent.fg, letterSpacing: '0.08em' }}
-        >
-          {tag}
-        </span>
-      </div>
+      <span
+        className="inline-flex items-center justify-center rounded-[14px] relative"
+        style={{
+          width: 44,
+          height: 44,
+          background: 'rgba(0,255,135,0.10)',
+          border: '1px solid var(--stroke-green)',
+        }}
+      >
+        <Icon size={22} strokeWidth={1.6} color="var(--kiro-green)" />
+      </span>
 
-      <h3 className="k-h1 relative" style={{ fontSize: 'clamp(24px, 3vw, 30px)' }}>
+      <h3
+        className="font-display font-semibold text-[var(--fg-1)] tracking-[-0.01em] relative md:min-h-[3.5rem]"
+        style={{ fontSize: 'clamp(20px, 2.4vw, 22px)', lineHeight: 1.3 }}
+      >
         {title}
       </h3>
 
-      <ul className="flex flex-col gap-3 mt-1 relative">
-        {bullets.map((b) => (
-          <li key={b} className="flex items-start gap-3">
-            <span
-              className="inline-flex items-center justify-center rounded-full flex-shrink-0 mt-[2px]"
-              style={{ width: 20, height: 20, background: accent.bg, border: `1px solid ${accent.border}` }}
-            >
-              <Check size={12} strokeWidth={2.4} color={accent.fg} />
-            </span>
-            <span className="text-[14px] text-[var(--fg-2)] leading-snug font-sans">{b}</span>
-          </li>
-        ))}
-      </ul>
+      <p className="font-sans text-[14px] text-[var(--fg-2)] leading-relaxed relative">
+        {body}
+      </p>
     </div>
   );
 }

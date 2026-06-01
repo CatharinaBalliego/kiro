@@ -17,14 +17,14 @@ export function Hero() {
             className="k-display"
             style={{ fontSize: 'clamp(38px, 6vw, 64px)' }}
           >
-            Sua venda hoje.
+            Receba PIX.
             <br />
-            <span className="k-gradient-text">Seu dinheiro hoje.</span>
+            <span className="k-gradient-text">Seu dinheiro rende.</span>
           </h1>
           <p className="font-sans text-[16px] md:text-[17px] text-[var(--fg-2)] leading-relaxed max-w-[520px]">
-            O Kiro transforma seus recebíveis de cartão em saldo disponível na
-            hora, via PIX. Sem espera de 30 dias, sem burocracia. Tecnologia
-            Stellar por baixo, simplicidade pra você.
+            O Kiro é a conta do seu negócio que rende todo dia. Seu cliente
+            paga por PIX, o saldo parado já começa a render sozinho, e você
+            saca pelo PIX quando precisar. Sem maquininha, sem mensalidade.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 mt-2">
@@ -44,7 +44,7 @@ export function Hero() {
           </div>
 
           <p className="font-sans text-[12px] text-[var(--fg-3)] mt-2">
-            Demo pública · ambiente Testnet · sem cadastro necessário
+            Demo aberta · sem cadastro
           </p>
         </div>
 
@@ -70,7 +70,7 @@ function Pill() {
       }}
     >
       <Sparkles size={13} strokeWidth={2} />
-      PayFi · Stellar · PIX 24/7
+      Conta que rende · PIX a qualquer hora
     </span>
   );
 }
@@ -107,7 +107,7 @@ function BalanceCardMock() {
               letterSpacing: '0.04em',
             }}
           >
-            6% APY
+            Rendendo
           </span>
         </div>
 
@@ -160,7 +160,7 @@ function BalanceCardMock() {
           {[
             { label: 'PIX recebido', value: 'R$ 259,90' },
             { label: 'PIX recebido', value: 'R$ 189,00' },
-            { label: 'Antecipação', value: 'R$ 1.250,00' },
+            { label: 'Rendimento (mês)', value: 'R$ 14,72' },
           ].map((row) => (
             <div key={row.label + row.value} className="flex items-center justify-between">
               <span className="text-[12px] text-[var(--fg-3)] font-sans">{row.label}</span>

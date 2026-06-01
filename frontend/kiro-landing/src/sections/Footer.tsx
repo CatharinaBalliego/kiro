@@ -4,9 +4,9 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
   {
     title: 'Produto',
     links: [
-      { label: 'Para lojistas', href: '#audiencias' },
-      { label: 'Para investidores', href: '#audiencias' },
+      { label: 'Pra que serve', href: '#audiencias' },
       { label: 'Como funciona', href: '#como-funciona' },
+      { label: 'Em breve', href: '#em-breve' },
       { label: 'Dashboard', href: 'https://kiro-merchant-dashboard.netlify.app/resumo' },
     ],
   },
@@ -15,15 +15,14 @@ const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
     links: [
       { label: 'Stellar Network', href: 'https://stellar.org' },
       { label: 'Etherfuse (TESOURO)', href: 'https://app.etherfuse.com/bonds/TESOURO' },
-      { label: 'Status', href: '#' },
     ],
   },
   {
     title: 'Empresa',
     links: [
       { label: 'Contato', href: 'mailto:contato@kiro.app' },
-      { label: 'Termos de uso', href: '#' },
-      { label: 'Privacidade', href: '#' },
+      { label: 'LinkedIn', href: 'https://www.linkedin.com/company/kiro-payments' },
+      { label: 'X', href: 'https://x.com/Kiro_app' },
     ],
   },
 ];
@@ -39,8 +38,8 @@ export function Footer() {
           <div className="flex flex-col gap-4">
             <KiroLogo size={28} />
             <p className="font-sans text-[13px] text-[var(--fg-3)] leading-relaxed max-w-[300px]">
-              PayFi para o varejo brasileiro. Transformamos vendas em dinheiro
-              imediato com tecnologia Stellar.
+              Conta do seu negócio que rende todo dia e saca pelo PIX a
+              qualquer hora.
             </p>
           </div>
 

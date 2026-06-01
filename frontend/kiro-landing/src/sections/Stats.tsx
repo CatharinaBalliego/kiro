@@ -1,8 +1,8 @@
 const STATS: { value: string; suffix?: string; label: string }[] = [
-  { value: '5', suffix: 'min', label: 'Tempo médio de antecipação' },
-  { value: '6', suffix: '% APY', label: 'Rendimento do saldo parado' },
-  { value: '0,9', suffix: '%', label: 'Taxa flat por antecipação' },
-  { value: '24', suffix: '/7', label: 'PIX disponível, todos os dias' },
+  { value: '24', suffix: '/7', label: 'PIX a qualquer hora, todo dia' },
+  { value: '100', suffix: '%', label: 'Do seu saldo rende sozinho' },
+  { value: '1', suffix: ' clique', label: 'Pra sacar pro seu banco' },
+  { value: 'R$ 0', label: 'Sem mensalidade, sem maquininha' },
 ];
 
 export function Stats() {
@@ -56,7 +56,7 @@ export function Stats() {
       </div>
 
       <p className="font-sans text-[11px] text-[var(--fg-4)] text-center mt-4">
-        * Números de referência do MVP em ambiente Testnet. Taxas e prazos podem variar em produção.
+        * Demo aberta. Em fase de validação regulatória.
       </p>
     </section>
   );
